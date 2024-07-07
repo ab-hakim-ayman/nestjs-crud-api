@@ -13,41 +13,45 @@ export class TodoService {
     private readonly todoRepository: Repository<Todo>,
   ) {}
 
-  findAll() {
-    return this.todoRepository.find({ where: { isDeleted: false } });
+  async findAll() {
+    return await this.todoRepository.find({ where: { isDeleted: false } });
   }
 
-  findOne(todoId: string) {
+  async findOne(todoId: string) {
     const objectId = new ObjectId(todoId);
-    return this.todoRepository.findOne({ where: { _id: objectId } });
+    return await this.todoRepository.findOne({ where: { _id: objectId } });
   }
 
-  create(createTodoDto: CreateTodoDto) {
+  async create(createTodoDto: CreateTodoDto) {
     const todo = this.todoRepository.create(createTodoDto);
-    return this.todoRepository.save(todo);
+    return await this.todoRepository.save(todo);
   }
 
-  update(todoId: string, updateTodoDto: UpdateTodoDto) {
+  async update(todoId: string, updateTodoDto: UpdateTodoDto) {
     const objectId = new ObjectId(todoId);
-    return this.todoRepository.update(objectId, updateTodoDto);
+    await this.todoRepository.update(objectId, updateTodoDto);
+    return await this.todoRepository.findOne({ where: { _id: objectId } });
   }
 
-  softDelete(todoId: string) {
+  async softDelete(todoId: string) {
     const objectId = new ObjectId(todoId);
-    return this.todoRepository.update(objectId, { isDeleted: true });
+    await this.todoRepository.update(objectId, { isDeleted: true });
+    return { message: 'Todo soft deleted successfully' };
   }
 
-  findArchived() {
-    return this.todoRepository.find({ where: { isArchived: true } });
+  async findArchived() {
+    return await this.todoRepository.find({ where: { isArchived: true } });
   }
 
-  restore(todoId: string) {
+  async restore(todoId: string) {
     const objectId = new ObjectId(todoId);
-    return this.todoRepository.update(objectId, { isDeleted: false });
+    await this.todoRepository.update(objectId, { isDeleted: false });
+    return await this.todoRepository.findOne({ where: { _id: objectId } });
   }
 
-  permanentDelete(todoId: string) {
+  async permanentDelete(todoId: string) {
     const objectId = new ObjectId(todoId);
-    return this.todoRepository.delete(objectId);
+    await this.todoRepository.delete(objectId);
+    return { message: 'Todo permanently deleted successfully' };
   }
 }
